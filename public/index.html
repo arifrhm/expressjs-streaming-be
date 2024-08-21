@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>RTSP Stream Viewer</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                text-align: center;
+                background-color: #f0f0f0;
+                margin: 0;
+                padding: 0;
+            }
+            h1 {
+                margin-top: 20px;
+            }
+            #video {
+                width: 720px;
+                height: 480px;
+                border: 1px solid #ccc;
+                background: #000;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>RTSP Stream Viewer</h1>
+        <img id="video" src="" alt="Video Stream" />
+        <script>
+            const ws = new WebSocket("ws://localhost:8331");
+            const video = document.getElementById("video");
+
+            ws.binaryType = "arraybuffer";
+
+            ws.onmessage = function (event) {
+                if (event.data instanceof ArrayBuffer) {
+                    const blob = new Blob([event.data], { type: "image/jpeg" });
+                    video.src = URL.createObjectURL(blob);
+                }
+            };
+
+            ws.onclose = function () {
+                console.log("WebSocket connection closed.");
+            };
+
+            ws.onerror = function (error) {
+                console.error("WebSocket error:", error);
+            };
+        </script>
+    </body>
+</html>
